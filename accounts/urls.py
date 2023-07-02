@@ -8,7 +8,6 @@ from .views import RegisterVeiw, ProfileVeiw
 urlpatterns = [
     path("register", RegisterVeiw.as_view(), name="user_register"),
     path("profile", ProfileVeiw.as_view(), name="Create_Profile"),
-
     path("token", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
 ]

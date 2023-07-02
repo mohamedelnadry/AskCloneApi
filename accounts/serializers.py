@@ -11,8 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate_email(self, value):
-        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
-                        value):
+        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", value):
             raise serializers.ValidationError("Enter a valid email address")
 
         if User.objects.filter(email=value).exists():
@@ -33,7 +32,12 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ["description", "facebook", "twitter"]
 
-    def update(self, validated_data):
+    def create(self, validated_data):
         user = self.context["user"]
-        profile = Profile.objects.filter(user=user.id).update(**validated_data)
+
+        profile, created = Profile.objects.get_or_create(user=user)
+        for attr, value in validated_data.items():
+            setattr(profile, attr, value)
+        profile.save()
+
         return profile
