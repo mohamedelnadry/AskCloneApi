@@ -1,40 +1,37 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Profile
-import re
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["username", "email", "password"]
-        extra_kwargs = {"password": {"write_only": True}}
+class UserSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150)
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, style={"input_type": "password"})
+
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Username Already Exists")
+        return value
 
     def validate_email(self, value):
-        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", value):
-            raise serializers.ValidationError("Enter a valid email address")
-
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email Already Exists")
-
         return value
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
-        user.save()
         if user:
             Profile.objects.create(user=user)
         return user
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ["description", "facebook", "twitter"]
+class ProfileSerializer(serializers.Serializer):
+    description = serializers.CharField()
+    facebook = serializers.URLField(max_length=200)
+    twitter = serializers.URLField(max_length=200)
 
     def create(self, validated_data):
         user = self.context["user"]
-
         profile, created = Profile.objects.get_or_create(user=user)
         for attr, value in validated_data.items():
             setattr(profile, attr, value)

@@ -3,19 +3,14 @@ from .models import Question
 from accounts.models import Profile
 
 
-class QuestionSerializer(serializers.ModelSerializer):
-    reciever = serializers.ListField(write_only=True)
-
-    class Meta:
-        model = Question
-        fields = ["question_body", "sender", "reciever", "anonymous"]
+class QuestionSerializer(serializers.Serializer):
+    question_body = serializers.CharField(max_length=200)
+    anonymous = serializers.BooleanField(default=False)
 
     def create(self, validated_data):
-        reciever_ids = validated_data.pop("reciever", [])
+        user = self.context["user"]
+        sender = Profile.objects.get(user=user)
+        validated_data["sender"] = sender
         question = Question.objects.create(**validated_data)
-
-        receivers = Profile.objects.filter(user__username__in=reciever_ids)
-        for receiver in receivers:
-            question.reciever.add(receiver)
 
         return question
