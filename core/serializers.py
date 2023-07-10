@@ -23,6 +23,12 @@ class QuestionListSerializer(serializers.ModelSerializer):
         model = Question
         fields = "__all__"
 
+    def to_representation(self, instance):
+        ins = super().to_representation(instance)
+        if ins["anonymous"]:
+            ins.pop("sender")
+        return ins
+
 
 class QeustionPostSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
@@ -40,3 +46,9 @@ class QeustionPostSerializer(serializers.Serializer):
         validated_data["user"] = user_profile
         question_post = QuestionPost.objects.create(**validated_data)
         return question_post
+    
+
+class QPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionPost
+        fields = "__all__"

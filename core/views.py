@@ -6,8 +6,14 @@ from .serializers import (
     QuestionSerializer,
     QeustionPostSerializer,
     QuestionListSerializer,
+    QPostSerializer,
 )
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+
 from .models import Question, QuestionPost
+from accounts.models import Profile
 
 
 class QuestionVeiw(generics.CreateAPIView):
@@ -29,11 +35,22 @@ class QuestionVeiw(generics.CreateAPIView):
 
 
 class QuestionListVeiw(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     serializer_class = QuestionListSerializer
     queryset = Question.objects.all()
 
 
+# class DeleteQuestionVeiw(generics.RetrieveAPIView):
+#     permission_classes = [IsAuthenticated]
+#     authentication_classes = [JWTAuthentication]
+#     serializer_class = QuestionListSerializer
+#     queryset = Question.objects.all()
+
+
 class QuestionPostVeiw(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     serializer_class = QeustionPostSerializer
     queryset = QuestionPost.objects.all()
 
@@ -42,3 +59,30 @@ class QuestionPostVeiw(generics.CreateAPIView):
         context.update({"user": self.request.user})
 
         return context
+
+
+class ListQuestionPostVeiw(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    serializer_class = QPostSerializer
+    queryset = QuestionPost.objects.all()
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        questionpost = QuestionPost.objects.filter(user=profile)
+        return questionpost
+
+
+class DeReUpQuestionPost(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    serializer_class = QPostSerializer
+    queryset = QuestionPost.objects.all()
+
+    def delete(self, request, *args, **kwargs):
+        self.destroy(request, *args, **kwargs)
+        return Response(
+            {"message": "Question Post Deleted Successfully"},
+            status=status.HTTP_200_OK,
+        )
+
