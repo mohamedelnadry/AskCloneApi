@@ -67,10 +67,14 @@ class ListQuestionPostVeiw(generics.ListAPIView):
     serializer_class = QPostSerializer
     queryset = QuestionPost.objects.all()
 
-    def get_queryset(self):
-        profile = Profile.objects.get(user=self.request.user)
-        questionpost = QuestionPost.objects.filter(user=profile)
-        return questionpost
+    def get(self, request, *args, **kwargs):
+        listquestion = super().get(request, *args, **kwargs)
+        if listquestion.data == []:
+            return Response(
+                {"message": "No Posts added"},
+                status=status.HTTP_204_NO_CONTENT,
+            )
+        return listquestion
 
 
 class DeReUpQuestionPost(generics.RetrieveUpdateDestroyAPIView):
@@ -86,3 +90,4 @@ class DeReUpQuestionPost(generics.RetrieveUpdateDestroyAPIView):
             status=status.HTTP_200_OK,
         )
 
+    
