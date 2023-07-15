@@ -10,7 +10,7 @@ from .serializers import (
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from django.shortcuts import get_object_or_404
 
 from .models import Question, QuestionPost
 from accounts.models import Profile
@@ -34,18 +34,25 @@ class QuestionVeiw(generics.CreateAPIView):
         return context
 
 
-class QuestionListVeiw(generics.ListAPIView):
+class RQuestionVeiw(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = QuestionListSerializer
     queryset = Question.objects.all()
 
+    def get_object(self):
+        pk = self.kwargs.get("pk")
+        question = get_object_or_404(Question, id=pk)
+        answars = QuestionPost.objects.filter(question=question)
+        question.answars.set(answars)
+        return question
 
-# class DeleteQuestionVeiw(generics.RetrieveAPIView):
-#     permission_classes = [IsAuthenticated]
-#     authentication_classes = [JWTAuthentication]
-#     serializer_class = QuestionListSerializer
-#     queryset = Question.objects.all()
+
+class QuestionListVeiw(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    serializer_class = QuestionListSerializer
+    queryset = Question.objects.all()
 
 
 class QuestionPostVeiw(generics.CreateAPIView):
@@ -77,7 +84,7 @@ class ListQuestionPostVeiw(generics.ListAPIView):
         return listquestion
 
 
-class DeReUpQuestionPost(generics.RetrieveUpdateDestroyAPIView):
+class DeQuestionPost(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = QPostSerializer
@@ -90,4 +97,17 @@ class DeReUpQuestionPost(generics.RetrieveUpdateDestroyAPIView):
             status=status.HTTP_200_OK,
         )
 
-    
+    def update(self, request, *args, **kwargs):
+        user = self.request.user
+        profile = Profile.objects.get(user=user)
+        instance = self.get_object()
+        request.data["user"] = profile.id
+        serializer = self.get_serializer(instance, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Question Post Updated Successfully"},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

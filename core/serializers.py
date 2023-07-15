@@ -18,10 +18,18 @@ class QuestionSerializer(serializers.Serializer):
         return question
 
 
+class AnswarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionPost
+        fields = ["id", "answar", "user"]
+
+
 class QuestionListSerializer(serializers.ModelSerializer):
+    answars = AnswarSerializer(many=True, read_only=True)
+
     class Meta:
         model = Question
-        fields = "__all__"
+        fields = ["id", "question_body", "sender", "anonymous", "answars"]
 
     def to_representation(self, instance):
         ins = super().to_representation(instance)
@@ -46,9 +54,26 @@ class QeustionPostSerializer(serializers.Serializer):
         validated_data["user"] = user_profile
         question_post = QuestionPost.objects.create(**validated_data)
         return question_post
-    
+
 
 class QPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuestionPost
-        fields = "__all__"
+        fields = ["id", "question", "answar", "user"]
+        read_only_fields = ["question"]
+
+    def to_representation(self, instance):
+        inst = super().to_representation(instance)
+        question_id = inst.pop("question")
+        question = Question.objects.get(pk=question_id)
+        inst["question"] = {
+            "id": question.id,
+            "question": question.question_body,
+        }
+        return inst
+
+    def update(self, instance, validated_data):
+        if not instance.user == validated_data["user"]:
+            raise serializers.ValidationError("check your token")
+
+        return super().update(instance, validated_data)

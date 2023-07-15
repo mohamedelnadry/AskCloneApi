@@ -4,7 +4,8 @@ from .views import (
     QuestionPostVeiw,
     QuestionListVeiw,
     ListQuestionPostVeiw,
-    DeReUpQuestionPost
+    DeQuestionPost,
+    RQuestionVeiw,
 )
 
 urlpatterns = [
@@ -14,17 +15,22 @@ urlpatterns = [
     path("listquestionpost", ListQuestionPostVeiw.as_view(), name="list_question_post"),
     path(
         "deletequestionpost/<int:pk>",
-        DeReUpQuestionPost.as_view(),
+        DeQuestionPost.as_view(),
         name="delete_question_post",
     ),
     path(
         "retrievequestionpost/<int:pk>",
-        DeReUpQuestionPost.as_view(),
+        DeQuestionPost.as_view(),
         name="retrieve_question_post",
     ),
     path(
         "updatequestionpost/<int:pk>",
-        DeReUpQuestionPost.as_view(),
+        DeQuestionPost.as_view(),
         name="update_question_post",
+    ),
+    path(
+        "question/<int:pk>",
+        RQuestionVeiw.as_view(),
+        name="questions",
     ),
 ]

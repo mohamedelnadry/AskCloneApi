@@ -23,7 +23,7 @@ class Question(models.Model):
 
 class QuestionPost(models.Model):
     question = models.ForeignKey(
-        Question, related_name="questions", on_delete=models.CASCADE
+        Question, related_name="answars", on_delete=models.CASCADE
     )
     answar = models.CharField(max_length=255)
 
