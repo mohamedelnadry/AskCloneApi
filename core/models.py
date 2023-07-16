@@ -5,6 +5,9 @@ from accounts.models import Profile
 
 
 class Question(models.Model):
+    """
+    Model representing a question.
+    """
     question_body = models.CharField(max_length=200)
 
     sender = models.ForeignKey(
@@ -22,6 +25,9 @@ class Question(models.Model):
 
 
 class QuestionPost(models.Model):
+    """
+    Model representing a question post (answer to a question).
+    """
     question = models.ForeignKey(
         Question, related_name="answars", on_delete=models.CASCADE
     )

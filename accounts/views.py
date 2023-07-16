@@ -8,7 +8,13 @@ from .serializers import UserSerializer, ProfileSerializer
 
 
 class RegisterVeiw(APIView):
+    """
+    API view for user registration.
+    """
     def post(self, request):
+        """
+        Handle the POST request for user registration.
+        """
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -19,10 +25,16 @@ class RegisterVeiw(APIView):
 
 
 class ProfileVeiw(APIView):
+    """
+    API view for creating a user profile.
+    """
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def post(self, request):
+        """
+        Handle the POST request for creating a user profile.
+        """
         serializer = ProfileSerializer(
             data=request.data, context={"user": request.user}
         )

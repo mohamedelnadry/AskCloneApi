@@ -7,6 +7,7 @@ from .serializers import (
     QeustionPostSerializer,
     QuestionListSerializer,
     QPostSerializer,
+    ReQuestionSerializer,
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -17,10 +18,16 @@ from accounts.models import Profile
 
 
 class QuestionVeiw(generics.CreateAPIView):
+    """
+    API view to create a new question.
+    """
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()
 
     def create(self, request, *args, **kwargs):
+        """
+        Override the create method to add custom response data.
+        """
         response = super().create(request, *args, **kwargs)
         return Response(
             {"message": "Question Created Successfully", "data": response.data},
@@ -28,6 +35,9 @@ class QuestionVeiw(generics.CreateAPIView):
         )
 
     def get_serializer_context(self):
+        """
+        Add the current user to the serializer context.
+        """
         context = super().get_serializer_context()
         context.update({"user": self.request.user})
 
@@ -35,12 +45,18 @@ class QuestionVeiw(generics.CreateAPIView):
 
 
 class RQuestionVeiw(generics.RetrieveAPIView):
+    """
+    API view to retrieve a question with its associated answers.
+    """
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
-    serializer_class = QuestionListSerializer
+    serializer_class = ReQuestionSerializer
     queryset = Question.objects.all()
 
     def get_object(self):
+        """
+        Get the question with the provided ID and attach its answers.
+        """
         pk = self.kwargs.get("pk")
         question = get_object_or_404(Question, id=pk)
         answars = QuestionPost.objects.filter(question=question)
@@ -49,6 +65,9 @@ class RQuestionVeiw(generics.RetrieveAPIView):
 
 
 class QuestionListVeiw(generics.ListAPIView):
+    """
+    API view to list all questions.
+    """
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = QuestionListSerializer
@@ -56,12 +75,18 @@ class QuestionListVeiw(generics.ListAPIView):
 
 
 class QuestionPostVeiw(generics.CreateAPIView):
+    """
+    API view to create a new question post.
+    """
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = QeustionPostSerializer
     queryset = QuestionPost.objects.all()
 
     def get_serializer_context(self):
+        """
+        Add the current user to the serializer context.
+        """
         context = super().get_serializer_context()
         context.update({"user": self.request.user})
 
@@ -69,12 +94,18 @@ class QuestionPostVeiw(generics.CreateAPIView):
 
 
 class ListQuestionPostVeiw(generics.ListAPIView):
+    """
+    API view to list all question posts.
+    """
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = QPostSerializer
     queryset = QuestionPost.objects.all()
 
     def get(self, request, *args, **kwargs):
+        """
+        Override the get method to handle empty response.
+        """
         listquestion = super().get(request, *args, **kwargs)
         if listquestion.data == []:
             return Response(
@@ -85,12 +116,18 @@ class ListQuestionPostVeiw(generics.ListAPIView):
 
 
 class DeQuestionPost(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API view to retrieve, update, and delete a question post.
+    """
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = QPostSerializer
     queryset = QuestionPost.objects.all()
 
     def delete(self, request, *args, **kwargs):
+        """
+        Override the delete method to return a success message.
+        """
         self.destroy(request, *args, **kwargs)
         return Response(
             {"message": "Question Post Deleted Successfully"},
@@ -98,6 +135,9 @@ class DeQuestionPost(generics.RetrieveUpdateDestroyAPIView):
         )
 
     def update(self, request, *args, **kwargs):
+        """
+        Override the update method to handle token validation and return a success message.
+        """
         user = self.request.user
         profile = Profile.objects.get(user=user)
         instance = self.get_object()

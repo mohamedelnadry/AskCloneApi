@@ -4,6 +4,9 @@ from .models import Profile
 
 
 class UserSerializer(serializers.Serializer):
+    """
+    Serializer for user registration.
+    """
     username = serializers.CharField(max_length=150)
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, style={"input_type": "password"})
@@ -19,6 +22,9 @@ class UserSerializer(serializers.Serializer):
         return value
 
     def create(self, validated_data):
+        """
+        Create a new user with the validated data.
+        """
         user = User.objects.create_user(**validated_data)
         if user:
             Profile.objects.create(user=user)
@@ -26,11 +32,17 @@ class UserSerializer(serializers.Serializer):
 
 
 class ProfileSerializer(serializers.Serializer):
+    """
+    Serializer for creating a user profile.
+    """
     description = serializers.CharField()
     facebook = serializers.URLField(max_length=200)
     twitter = serializers.URLField(max_length=200)
 
     def create(self, validated_data):
+        """
+        Create a new profile with the validated data.
+        """
         user = self.context["user"]
         profile, created = Profile.objects.get_or_create(user=user)
         for attr, value in validated_data.items():
