@@ -54,3 +54,7 @@ python manage.py runserver
 - `/api/retrievequestionpost/<int:pk>`: GET request to retrieve a question post by its ID.
 - `/api/updatequestionpost/<int:pk>`: PUT request to update a question post by its ID.
 - `/api/question/<int:pk>`: GET request to retrieve a question and its associated question posts by its ID.
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4891f1a2752f22dcc4aca93ef0ce2761f68b34a7
