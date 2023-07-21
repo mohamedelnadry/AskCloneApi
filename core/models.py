@@ -1,43 +1,19 @@
-""" Core App Model. """
+# coding=utf-8
+"""Core App Models."""
 
 from django.db import models
-from accounts.models import Profile
 
 
-class Question(models.Model):
+class BaseModel(models.Model):
     """
-    Model representing a question.
+    An abstract base class model that provides self-updating
+    ``created_at`` and ``updated_at`` fields.
     """
-    question_body = models.CharField(max_length=200)
 
-    sender = models.ForeignKey(
-        Profile, default=None, null=True, on_delete=models.PROTECT
-    )
-
-    anonymous = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Question"
-        verbose_name_plural = "Questions"
+        """Meta class."""
 
-    def __str__(self):
-        return self.question_body
-
-
-class QuestionPost(models.Model):
-    """
-    Model representing a question post (answer to a question).
-    """
-    question = models.ForeignKey(
-        Question, related_name="answars", on_delete=models.CASCADE
-    )
-    answar = models.CharField(max_length=255)
-
-    user = models.ForeignKey(Profile, on_delete=models.PROTECT)
-
-    class Meta:
-        verbose_name = "QuestionPost"
-        verbose_name_plural = "QuestionsPost"
-
-    def __str__(self):
-        return self.question.question_body
+        abstract = True

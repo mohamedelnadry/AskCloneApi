@@ -36,7 +36,6 @@ class ProfileSerializer(serializers.Serializer):
     Serializer for creating a user profile.
     """
     description = serializers.CharField()
-    facebook = serializers.URLField(max_length=200)
     twitter = serializers.URLField(max_length=200)
 
     def create(self, validated_data):

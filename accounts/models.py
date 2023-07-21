@@ -8,11 +8,11 @@ class Profile(models.Model):
     """
     Model representing a user profile.
     """
+
     user = models.OneToOneField(
         User, related_name="user_profile", on_delete=models.PROTECT
     )
     description = models.TextField(blank=True, null=True)
-    facebook = models.CharField(max_length=255, blank=True, null=True)
     twitter = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:

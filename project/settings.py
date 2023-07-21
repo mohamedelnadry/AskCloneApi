@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     # apps
     'core',
+    'askfm',
     'accounts',
 
 ]
@@ -99,7 +100,7 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "ask_clone",
+        "NAME": "askclone",
         "USER": "postgres",
         "PASSWORD": 1,
         "HOST": "localhost",

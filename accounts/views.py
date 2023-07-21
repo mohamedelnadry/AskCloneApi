@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import UserSerializer, ProfileSerializer
 
 
@@ -11,6 +11,9 @@ class RegisterVeiw(APIView):
     """
     API view for user registration.
     """
+
+    permission_classes = [AllowAny]
+
     def post(self, request):
         """
         Handle the POST request for user registration.
@@ -28,6 +31,7 @@ class ProfileVeiw(APIView):
     """
     API view for creating a user profile.
     """
+
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
