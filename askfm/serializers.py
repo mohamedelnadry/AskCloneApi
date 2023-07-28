@@ -8,10 +8,11 @@ class QuestionSerializer(serializers.ModelSerializer):
     """serializer for question"""
 
     sender = serializers.PrimaryKeyRelatedField(read_only=True)
+    privet = serializers.BooleanField(default=False, read_only=True)
 
     class Meta:
         model = Question
-        fields = ["id", "question", "sender", "anonymous"]
+        fields = ["id", "question", "sender", "anonymous", "privet"]
 
     def to_representation(self, instance):
         """

@@ -12,7 +12,8 @@ class Question(BaseModel):
     sender = models.ForeignKey(
         Profile, related_name="sender_profile", on_delete=models.PROTECT
     )
-    anonymous = models.BooleanField()
+    anonymous = models.BooleanField(default=False)
+    privet = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-question"]
@@ -27,9 +28,9 @@ class Answer(BaseModel):
     question = models.ForeignKey(
         Question, related_name="question_answer", on_delete=models.CASCADE
     )
-    answer = models.TextField()
+    answer = models.TextField(null=True)
     user = models.ForeignKey(Profile, on_delete=models.PROTECT)
-
+    privet = models.BooleanField(default=False)
     class Meta:
         ordering = ["-question"]
         verbose_name = "Answer"

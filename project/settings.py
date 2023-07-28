@@ -100,7 +100,7 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "askclone",
+        "NAME": "ask_clone",
         "USER": "postgres",
         "PASSWORD": 1,
         "HOST": "localhost",
