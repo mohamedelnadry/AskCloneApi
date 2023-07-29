@@ -6,7 +6,7 @@ Ask Clone is a Django application that provides functionalities related to user 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/AskCloneApi
+git clone https://github.com/mohamedelnadry/AskCloneApi
 
 ```
 2. Create a virtual environment:
