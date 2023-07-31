@@ -44,6 +44,11 @@ class PrivetQuestion(APIView):
     def post(self, request):
         sender = ProfileService.get_profile(self.request.user)
         reciever = request.data.pop("reciever")
+        if not reciever:
+            return Response(
+                {"detail": "no reciever"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         user = PrivetQuestion.reciever_check(reciever)
         if user == None or sender == None:
             return Response(
@@ -90,11 +95,22 @@ class PrivetQuestion(APIView):
             return None
 
 
-class QuestionList(generics.ListCreateAPIView):
+class GeneralQuestionList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+
+
+class PrivetQuestionList(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+    def get_queryset(self):
+        sender = ProfileService.get_profile(self.request.user)
+        question = Question.objects.filter(sender=sender, privet=True)
 
 
 class AnswerCreate(APIView):
@@ -126,20 +142,18 @@ class AnswerCreate(APIView):
 
     @staticmethod
     def create_answer(user, question, answer):
-        instance, created = Answer.objects.get_or_create(
-            user=user, question=question, answer=answer
-        )
-        if instance.user == user and instance.answer != None:
-            return None
-
-        if instance:
-            instance.privet = False
-            instance.answer = answer
-            instance.save()
-            return instance
-
-        if created:
-            return created
+        ins = Answer.objects.filter(user=user, question=question)
+        if ins:
+            if ins[0].answer == None:
+                ins[0].answer = answer
+                ins[0].privet = False
+                ins[0].save()
+                return 1
+            else:
+                return 0
+        else:
+            Answer.objects.create(user=user, question=question, answer=answer)
+            return 1
 
 
 class AnswerList(generics.ListAPIView):
