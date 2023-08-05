@@ -110,7 +110,7 @@ class PrivetQuestionList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         sender = ProfileService.get_profile(self.request.user)
-        question = Question.objects.filter(sender=sender, privet=True)
+        question = Answer.objects.select_related('')
 
 
 class AnswerCreate(APIView):

@@ -98,13 +98,13 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "ask_clone",
-        "USER": "postgres",
-        "PASSWORD": 1,
-        "HOST": "localhost",
-        "PORT": 5432,
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DATABASE_NAME'), # make sure to set this environment variable
+        'USER': os.environ.get('DATABASE_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD', '1'),
+        'HOST': 'db', # Use the service name from docker-compose.yml
+        'PORT': '5432',
     }
 }
 
